@@ -1,5 +1,5 @@
 [project]
-name = "djangorest-starter-kit"
+name = "tsu-posthub-api"
 version = "0.1.0"
 description = ""
 authors = [
