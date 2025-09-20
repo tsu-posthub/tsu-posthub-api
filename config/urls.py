@@ -23,7 +23,7 @@ from rest_framework import permissions
 
 from config.settings import BASE_DIR
 
-PROJECT_NAME = BASE_DIR.name
+PROJECT_NAME = "TSU PostHub API"
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -39,6 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('auth/', include('apps.auth_app.urls')),
+    path('profile/', include('apps.profile_app.urls')),
 
     path('', RedirectView.as_view(url='/swagger/', permanent=False)),
 ]

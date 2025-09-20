@@ -11,9 +11,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.auth_app.serializers import RegisterRequestSerializer, LoginRequestSerializer, RefreshRequestSerializer, \
     LogoutRequestSerializer
-from apps.auth_app.serializers_response import RegisterResponseSerializer, ErrorResponseSerializer, \
+from apps.auth_app.serializers_response import RegisterResponseSerializer, \
     LoginResponseSerializer, RefreshResponseSerializer
 from core.mixins import ErrorResponseMixin
+from core.serializers import ErrorResponseSerializer
 
 User = get_user_model()
 
