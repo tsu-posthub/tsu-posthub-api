@@ -22,7 +22,7 @@ from django.views.generic import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-PROJECT_NAME = "TSU PostHub API"
+PROJECT_NAME = "TSU PostHub"
 
 schema_view = get_schema_view(
     openapi.Info(

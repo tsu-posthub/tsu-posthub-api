@@ -1,15 +1,16 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, parsers
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.mixins import ErrorResponseMixin
 from core.serializers import ErrorResponseSerializer
+from .models import Post
 from .serializers import CreatePostRequestSerializer
 from .serializers_response import PostResponseSerializer
-
 
 title_param = openapi.Parameter(
     name="title",
@@ -35,10 +36,35 @@ images_param = openapi.Parameter(
     collectionFormat="multi"
 )
 
-class PostCreateView(ErrorResponseMixin, APIView):
+class PostListCreateView(ErrorResponseMixin, APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (parsers.MultiPartParser, parsers.FormParser)
 
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    @swagger_auto_schema(
+        tags=["posts"],
+        operation_summary="Список постов",
+        operation_description="Возвращает список всех постов с изображениями и автором",
+        responses={
+            200: openapi.Response(
+                description="Список постов",
+                schema=PostResponseSerializer(many=True)
+            ),
+            500: openapi.Response(
+                description="Внутренняя ошибка сервера",
+                schema=ErrorResponseSerializer
+            ),
+        },
+    )
+    def get(self, request):
+        posts = Post.objects.all().select_related("author").prefetch_related("images")
+        serializer = PostResponseSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     @swagger_auto_schema(
         tags=["posts"],
         operation_summary="Создание поста",
@@ -69,3 +95,35 @@ class PostCreateView(ErrorResponseMixin, APIView):
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
         return Response(PostResponseSerializer(post).data, status=status.HTTP_201_CREATED)
+
+
+class PostDetailView(ErrorResponseMixin, APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=["posts"],
+        operation_summary="Получение деталей поста",
+        operation_description="Возвращает детальную информацию о посте по ID",
+        responses={
+            200: openapi.Response(
+                description="Детали поста",
+                schema=PostResponseSerializer
+            ),
+            404: openapi.Response(
+                description="Пост не найден",
+                schema=ErrorResponseSerializer
+            ),
+            500: openapi.Response(
+                description="Внутренняя ошибка сервера",
+                schema=ErrorResponseSerializer
+            ),
+        },
+    )
+    def get(self, request, post_id):
+        try:
+            post = Post.objects.select_related("author").prefetch_related("images").get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(f"Post with post_id={post_id} does not exist")
+
+        serializer = PostResponseSerializer(post)
+        return Response(serializer.data)
