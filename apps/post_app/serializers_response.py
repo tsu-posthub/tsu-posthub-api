@@ -11,4 +11,14 @@ class PostResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["id", "title", "text", "likes_count", "author_id", "author_username", "images", "created_at"]
+        fields = [
+            "id",
+            "title",
+            "text",
+            "likes_count",
+            "author_id",
+            "author_username",
+            "images",
+            "created_at",
+            "updated_at",
+        ]
