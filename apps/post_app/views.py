@@ -10,7 +10,7 @@ from core.mixins import ErrorResponseMixin
 from core.serializers import ErrorResponseSerializer
 from .models import Post
 from .serializers import CreatePostRequestSerializer
-from .serializers_response import PostResponseSerializer
+from .serializers_response import PostListResponseSerializer, PostDetailResponseSerializer
 
 title_param = openapi.Parameter(
     name="title",
@@ -61,7 +61,7 @@ class PostListCreateView(ErrorResponseMixin, APIView):
         responses={
             200: openapi.Response(
                 description="Список постов",
-                schema=PostResponseSerializer(many=True)
+                schema=PostListResponseSerializer(many=True)
             ),
             500: openapi.Response(
                 description="Внутренняя ошибка сервера",
@@ -71,7 +71,7 @@ class PostListCreateView(ErrorResponseMixin, APIView):
     )
     def get(self, request):
         posts = Post.objects.all().select_related("author").prefetch_related("images")
-        serializer = PostResponseSerializer(posts, many=True)
+        serializer = PostListResponseSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @swagger_auto_schema(
@@ -83,7 +83,7 @@ class PostListCreateView(ErrorResponseMixin, APIView):
         responses={
             201: openapi.Response(
                 description="Пост успешно создан",
-                schema=PostResponseSerializer
+                schema=PostDetailResponseSerializer
             ),
             400: openapi.Response(
                 description="Ошибка валидации данных",
@@ -103,7 +103,7 @@ class PostListCreateView(ErrorResponseMixin, APIView):
         serializer = CreatePostRequestSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
-        return Response(PostResponseSerializer(post).data, status=status.HTTP_201_CREATED)
+        return Response(PostDetailResponseSerializer(post).data, status=status.HTTP_201_CREATED)
 
 
 class PostUpdateDetailView(ErrorResponseMixin, APIView):
@@ -121,7 +121,7 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
         responses={
             200: openapi.Response(
                 description="Детали поста",
-                schema=PostResponseSerializer
+                schema=PostDetailResponseSerializer
             ),
             404: openapi.Response(
                 description="Пост не найден",
@@ -139,7 +139,7 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
         except Post.DoesNotExist:
             raise NotFound(f"Post with post_id={post_id} does not exist")
 
-        serializer = PostResponseSerializer(post)
+        serializer = PostDetailResponseSerializer(post)
         return Response(serializer.data)
 
     @swagger_auto_schema(
@@ -151,7 +151,7 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
         responses={
             200: openapi.Response(
                 description="Пост успешно обновлён",
-                schema=PostResponseSerializer
+                schema=PostDetailResponseSerializer
             ),
             400: openapi.Response(
                 description="Ошибка валидации данных",
@@ -199,4 +199,4 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
         )
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
-        return Response(PostResponseSerializer(post).data, status=status.HTTP_200_OK)
+        return Response(PostDetailResponseSerializer(post).data, status=status.HTTP_200_OK)
