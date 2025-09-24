@@ -18,6 +18,8 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app/
 
+RUN python manage.py collectstatic --noinput
+
 # ---------- Runtime stage ----------
 FROM python:3.12-slim
 
@@ -33,7 +35,8 @@ COPY --from=builder /app /app
 COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-RUN mkdir -p /vol/web/media
+RUN mkdir -p /vol/web/static /vol/web/media
+VOLUME /vol/web/static
 VOLUME /vol/web/media
 
 EXPOSE 8000
