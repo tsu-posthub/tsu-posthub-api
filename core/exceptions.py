@@ -1,5 +1,8 @@
-﻿from rest_framework.exceptions import NotFound, ValidationError, NotAuthenticated, APIException, PermissionDenied
+﻿from rest_framework.exceptions import NotFound, ValidationError, NotAuthenticated, APIException, PermissionDenied, \
+    AuthenticationFailed
 from rest_framework import status
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+
 from core.mixins import ErrorResponseMixin
 
 def custom_exception_handler(exc, context):
@@ -11,6 +14,14 @@ def custom_exception_handler(exc, context):
             status.HTTP_401_UNAUTHORIZED,
             "Unauthorized",
             "User is not authenticated"
+        )
+
+    if isinstance(exc, (InvalidToken, TokenError, AuthenticationFailed)):
+        return ErrorResponseMixin.format_error(
+            request,
+            status.HTTP_401_UNAUTHORIZED,
+            "Unauthorized",
+            "Token is invalid or expired"
         )
 
     if isinstance(exc, PermissionDenied):
