@@ -31,4 +31,4 @@ VOLUME /vol/web/media
 
 EXPOSE 8000
 
-CMD ["gunicorn", "tsu_posthub_api.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["poetry", "run", "gunicorn", "project.wsgi:application", "-b", "0.0.0.0:8000"]
