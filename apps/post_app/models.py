@@ -10,6 +10,11 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
     likes_count = models.PositiveIntegerField(default=0)
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="liked_posts",
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
