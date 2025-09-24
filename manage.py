@@ -39,8 +39,10 @@ def init_superuser():
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
+    DEBUG = os.environ.get("DEBUG", "True").lower() in ["1", "true", "yes"]
     runserver_related = len(sys.argv) > 1 and sys.argv[1] in ["runserver", "migrate", "shell"]
-    if runserver_related:
+
+    if runserver_related and DEBUG:
         if os.environ.get("RUN_MAIN") or sys.argv[1] != "runserver":
             start_docker_compose()
             atexit.register(stop_docker_compose)
