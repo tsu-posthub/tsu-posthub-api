@@ -437,6 +437,17 @@ files = [
 ]
 
 [[package]]
+name = "signals"
+version = "0.0.2"
+description = "Object notifier and pubsub"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "signals-0.0.2.tar.gz", hash = "sha256:b9d43a42e23c5ae8ae04ac01a5234e6502efadef263eee93191fb31f58fdb339"},
+]
+
+[[package]]
 name = "sqlparse"
 version = "0.5.3"
 description = "A non-validating SQL parser."
@@ -480,4 +491,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "1b17dea025b144e6d697de5a2bf28e71388eacb80496e5e1745bebb28f102b85"
+content-hash = "d6664d911daa0355bdc1b33ede986fa8720d48e18f80b6a5424fd9233f2fdd64"

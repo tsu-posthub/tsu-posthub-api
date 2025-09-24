@@ -200,3 +200,49 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
         return Response(PostDetailResponseSerializer(post).data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        tags=["posts"],
+        operation_summary="Удаление поста",
+        operation_description="Позволяет автору удалить пост по ID",
+        responses={
+            204: "Пост успешно удалён",
+            401: openapi.Response(
+                description="Неавторизован",
+                schema=ErrorResponseSerializer
+            ),
+            403: openapi.Response(
+                description="Нет прав на удаление поста",
+                schema=ErrorResponseSerializer
+            ),
+            404: openapi.Response(
+                description="Пост не найден",
+                schema=ErrorResponseSerializer
+            ),
+            500: openapi.Response(
+                description="Внутренняя ошибка сервера",
+                schema=ErrorResponseSerializer
+            ),
+        },
+    )
+    def delete(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return self.format_error(
+                request,
+                status.HTTP_404_NOT_FOUND,
+                "Not Found",
+                f"Post with post_id={post_id} does not exist"
+            )
+
+        if post.author != request.user:
+            return self.format_error(
+                request,
+                status.HTTP_403_FORBIDDEN,
+                "Forbidden",
+                "You do not have permission to delete this post"
+            )
+
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
