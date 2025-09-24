@@ -246,3 +246,109 @@ class PostUpdateDetailView(ErrorResponseMixin, APIView):
 
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostLikeView(ErrorResponseMixin, APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=["posts"],
+        operation_summary="Поставить лайк посту",
+        operation_description="Позволяет авторизованному пользователю поставить лайк посту (один раз)",
+        responses={
+            200: openapi.Response(description="Лайк успешно поставлен"),
+            400: openapi.Response(
+                description="Пост уже лайкнут этим пользователем",
+                schema=ErrorResponseSerializer
+            ),
+            401: openapi.Response(
+                description="Неавторизован",
+                schema=ErrorResponseSerializer
+            ),
+            404: openapi.Response(
+                description="Пост не найден",
+                schema=ErrorResponseSerializer
+            ),
+            500: openapi.Response(
+                description="Внутренняя ошибка сервера",
+                schema=ErrorResponseSerializer
+            ),
+        },
+    )
+    def post(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return self.format_error(
+                request,
+                status.HTTP_404_NOT_FOUND,
+                "Not Found",
+                f"Post with id={post_id} does not exist"
+            )
+        
+        if post.likes.filter(id=request.user.id).exists():
+            return self.format_error(
+                request,
+                status.HTTP_400_BAD_REQUEST,
+                "Bad Request",
+                "You have already liked this post"
+            )
+        
+        post.likes.add(request.user)
+        post.likes_count = post.likes.count()
+        post.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class PostUnlikeView(ErrorResponseMixin, APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=["posts"],
+        operation_summary="Убрать лайк поста",
+        operation_description="Позволяет авторизованному пользователю убрать свой лайк с поста",
+        responses={
+            200: openapi.Response(description="Лайк успешно убран"),
+            400: openapi.Response(
+                description="Пользователь не ставил лайк на этот пост",
+                schema=ErrorResponseSerializer
+            ),
+            401: openapi.Response(
+                description="Неавторизован",
+                schema=ErrorResponseSerializer
+            ),
+            404: openapi.Response(
+                description="Пост не найден",
+                schema=ErrorResponseSerializer
+            ),
+            500: openapi.Response(
+                description="Внутренняя ошибка сервера",
+                schema=ErrorResponseSerializer
+            ),
+        },
+    )
+    def delete(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return self.format_error(
+                request,
+                status.HTTP_404_NOT_FOUND,
+                "Not Found",
+                f"Post with id={post_id} does not exist"
+            )
+        
+        if not post.likes.filter(id=request.user.id).exists():
+            return self.format_error(
+                request,
+                status.HTTP_400_BAD_REQUEST,
+                "Bad Request",
+                "You have not liked this post yet"
+            )
+        
+        post.likes.remove(request.user)
+        post.likes_count = post.likes.count()
+        post.save()
+
+        return Response(status=status.HTTP_200_OK)
