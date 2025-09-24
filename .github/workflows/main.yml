@@ -9,7 +9,7 @@ env:
   DEPLOY_USERNAME: 'deployuser'
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     environment: Production
 
@@ -44,6 +44,12 @@ jobs:
             ${{ env.DOCKER_IMAGE }}:latest
             ${{ env.DOCKER_IMAGE }}:${{ github.run_number }}
 
+  deploy-and-collectstatic:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: Production
+
+    steps:
       - name: 🚀 Deploy to Server (SSH)
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -63,7 +69,7 @@ jobs:
             docker stop tsu-posthub-api || true
             docker rm tsu-posthub-api || true
 
-            echo "🚀 Launch new container with media volume and env file..."
+            echo "🚀 Launch new container with media/static volumes and env file..."
             docker run -d \
               --name tsu-posthub-api \
               -p 8000:8000 \
@@ -72,6 +78,9 @@ jobs:
               -v /home/${{ env.DEPLOY_USERNAME }}/static:/vol/web/static \
               -v /home/${{ env.DEPLOY_USERNAME }}/media:/vol/web/media \
               ${{ env.DOCKER_IMAGE }}:latest
+
+            echo "🗂 Running collectstatic..."
+            docker exec tsu-posthub-api python manage.py collectstatic --noinput
 
       - name: 🛠 Rollback
         if: failure()

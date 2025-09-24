@@ -18,8 +18,6 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app/
 
-RUN python manage.py collectstatic --noinput
-
 # ---------- Runtime stage ----------
 FROM python:3.12-slim
 
