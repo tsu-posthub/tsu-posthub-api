@@ -29,6 +29,10 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # SECURITY
 AUTH_USER_MODEL = 'auth_app.User'
@@ -108,6 +112,7 @@ SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'core.schema.CustomAutoSchema',
     'OPERATIONS_SORTER' : 'method',
     'TAGS_SORTER' : 'alpha',
+    "DEFAULT_API_URL": "https://api.tsu-posthub.orexi4.ru:7443",
 }
 
 
