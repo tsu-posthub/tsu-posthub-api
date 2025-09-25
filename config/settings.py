@@ -34,6 +34,11 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.tsu-posthub.orexi4.ru',
+    'https://api.tsu-posthub.orexi4.ru:7443',
+]
+
 # SECURITY
 AUTH_USER_MODEL = 'auth_app.User'
 
