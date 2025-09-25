@@ -56,12 +56,13 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
 
-    if len(sys.argv) > 1 and sys.argv[1] == "runserver" and os.environ.get("RUN_MAIN"):
-        print("💾 Setting up Django...")
-        django.setup()
-        print("💾 Applying migrations automatically...")
-        call_command("migrate", interactive=False)
-        init_superuser()
+    print("💾 Setting up Django...")
+    django.setup()
+    print("💾 Applying migrations automatically...")
+    call_command("migrate", interactive=False)
+
+    print("💻 Checking/creating superuser...")
+    init_superuser()
 
     execute_from_command_line(sys.argv)
 
