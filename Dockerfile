@@ -40,4 +40,7 @@ VOLUME /vol/web/media
 EXPOSE 8000
 
 CMD python manage.py collectstatic --noinput \
-    && gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    && gunicorn tsu_posthub_api.wsgi:application \
+           --bind 0.0.0.0:8000 \
+           --workers 3 \
+           --timeout 60
