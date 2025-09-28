@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'apps.auth_app',
     'apps.profile_app',
-    'apps.post_app'
+    'apps.post_app',
     'corsheaders',
 ]
 
