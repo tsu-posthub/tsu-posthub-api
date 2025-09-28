@@ -29,6 +29,18 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.tsu-posthub.orexi4.ru',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://tsu-posthub.orexi4.ru',
+]
 
 # SECURITY
 AUTH_USER_MODEL = 'auth_app.User'
@@ -49,6 +61,7 @@ INSTALLED_APPS = [
     'apps.auth_app',
     'apps.profile_app',
     'apps.post_app',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -108,6 +122,7 @@ SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'core.schema.CustomAutoSchema',
     'OPERATIONS_SORTER' : 'method',
     'TAGS_SORTER' : 'alpha',
+    "DEFAULT_API_URL": "https://api.tsu-posthub.orexi4.ru",
 }
 
 
