@@ -68,7 +68,7 @@
                 --name tsu-posthub-api \
                 -p 8000:8000 \
                 --env-file /home/${{ env.DEPLOY_USERNAME }}/tsu-posthub.env \
-                --network ${{ env.DEPLOY_USERNAME }}_tsu-eventhub_net \
+                --network ${{ env.DEPLOY_USERNAME }}_tsu-posthub_net \
                 -v /home/${{ env.DEPLOY_USERNAME }}/static:/vol/web/static \
                 -v /home/${{ env.DEPLOY_USERNAME }}/media:/vol/web/media \
                 ${{ env.DOCKER_IMAGE }}:latest
@@ -88,7 +88,7 @@
                 --name tsu-posthub-api \
                 -p 8000:8000 \
                 --env-file /home/${{ env.DEPLOY_USERNAME }}/tsu-posthub.env \
-                --network ${{ env.DEPLOY_USERNAME }}_tsu-eventhub_net \
+                --network ${{ env.DEPLOY_USERNAME }}_tsu-posthub_net \
                 -v /home/${{ env.DEPLOY_USERNAME }}/static:/vol/web/static \
                 -v /home/${{ env.DEPLOY_USERNAME }}/media:/vol/web/media \
                 tsu-posthub-api-backup
