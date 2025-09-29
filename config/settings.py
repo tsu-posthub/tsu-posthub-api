@@ -185,7 +185,7 @@ MEDIA_URL = "/media/"
 if DEBUG:
     MEDIA_ROOT = BASE_DIR / "vol/web/media"
 else:
-    MEDIA_ROOT = "vol/web/media"
+    MEDIA_ROOT = "/vol/web/media"
 
 
 # Default primary key field type
