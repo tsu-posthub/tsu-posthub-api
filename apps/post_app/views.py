@@ -9,8 +9,9 @@ from rest_framework.views import APIView
 from core.mixins import ErrorResponseMixin
 from core.serializers import ErrorResponseSerializer
 from .models import Post
+from .pagination import PostPagination
 from .serializers import CreatePostRequestSerializer
-from .serializers_response import PostListResponseSerializer, PostDetailResponseSerializer
+from .serializers_response import PostListResponseSerializer, PostDetailResponseSerializer, PaginatedPostListSerializer
 
 title_param = openapi.Parameter(
     name="title",
@@ -61,7 +62,7 @@ class PostListCreateView(ErrorResponseMixin, APIView):
         responses={
             200: openapi.Response(
                 description="Список постов",
-                schema=PostListResponseSerializer(many=True)
+                schema=PaginatedPostListSerializer()
             ),
             500: openapi.Response(
                 description="Внутренняя ошибка сервера",
@@ -71,8 +72,10 @@ class PostListCreateView(ErrorResponseMixin, APIView):
     )
     def get(self, request):
         posts = Post.objects.all().select_related("author").prefetch_related("images")
-        serializer = PostListResponseSerializer(posts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PostPagination()
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostListResponseSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
     @swagger_auto_schema(
         tags=["posts"],

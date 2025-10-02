@@ -47,3 +47,9 @@ class PostDetailResponseSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+class PaginatedPostListSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+    next = serializers.CharField(allow_null=True)
+    previous = serializers.CharField(allow_null=True)
+    results = PostListResponseSerializer(many=True)
