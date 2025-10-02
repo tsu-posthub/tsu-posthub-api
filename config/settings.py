@@ -34,17 +34,19 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://api.tsu-posthub.orexi4.ru',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://api.tsu-posthub.orexi4.ru',
+#     'http://localhost:5173',
+#     'http://127.0.0.1:5173',
+# ]
+# 
+# CORS_ALLOWED_ORIGINS = [
+#     'https://tsu-posthub.orexi4.ru',
+#     'http://localhost:5173',
+#     'http://127.0.0.1:5173',
+# ]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://tsu-posthub.orexi4.ru',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # SECURITY
 AUTH_USER_MODEL = 'auth_app.User'
